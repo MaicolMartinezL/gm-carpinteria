@@ -30,19 +30,22 @@ model Product {
   active      Boolean   @default(true)
   categoryId  Int
   category    Category  @relation(fields: [categoryId], references: [id])
+  quotes      Quote[] // relación inversa para indicar que un producto puede tener muchas cotizaciones
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
-model Quote {
-  id            Int      @id @default(autoincrement())
-  customerName  String
-  customerEmail String
-  customerPhone String
-  message       String
-  status        String   @default("PENDIENTE")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model Quote { // define la tabla de cotizaciones
+  id            Int      @id @default(autoincrement()) // identificador único autoincremental
+  customerName  String // nombre del cliente
+  customerEmail String // correo del cliente
+  customerPhone String // teléfono del cliente
+  message       String // mensaje o detalle de la solicitud
+  status        String   @default("PENDIENTE") // estado inicial de la cotización
+  productId     Int // id del producto relacionado
+  product       Product  @relation(fields: [productId], references: [id]) // relación con la tabla Product
+  createdAt     DateTime @default(now()) // fecha de creación automática
+  updatedAt     DateTime @updatedAt // fecha de actualización automática
 }
 
 model User {
