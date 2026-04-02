@@ -1,65 +1,100 @@
-import Image from "next/image";
+import Link from "next/link"; // permite navegar entre páginas sin recargar
+import { prisma } from "@/lib/prisma"; // permite consultar productos desde la base de datos
 
-export default function Home() {
+export default async function HomePage() { // crea la página principal del sitio
+
+  const featuredProducts = await prisma.product.findMany({ // consulta algunos productos para mostrar en la home
+    where: {
+      active: true, // solo productos activos
+    },
+    take: 3, // trae solo 3 productos (destacados)
+    include: {
+      category: true, // incluye la categoría
+    },
+  });
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="space-y-16"> {/* contenedor general con separación entre secciones */}
+
+      {/* HERO */}
+      <section className="rounded-2xl bg-amber-700 px-8 py-16 text-white"> {/* sección principal con fondo oscuro */}
+        <div className="max-w-2xl"> {/* limita el ancho del contenido */}
+          <h1 className="text-4xl font-bold leading-tight"> {/* título principal */}
+            Carpintería a medida para tu hogar y oficina
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mt-4 text-gray-300"> {/* descripción */}
+            Diseñamos y fabricamos muebles personalizados con materiales de alta calidad.
+            Solicita tu cotización y transforma tus espacios.
           </p>
+
+          <div className="mt-6 flex gap-4"> {/* contenedor de botones */}
+            <Link
+              href="/catalogo" // lleva al catálogo
+              className="rounded-lg bg-white px-5 py-3 text-black font-medium"
+            >
+              Ver catálogo
+            </Link>
+
+            <Link
+              href="/cotizacion" // lleva a cotización general
+              className="rounded-lg border border-white px-5 py-3"
+            >
+              Solicitar cotización
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* SOBRE NOSOTROS */}
+      <section className="max-w-3xl"> {/* sección de información */}
+        <h2 className="text-2xl font-bold">Sobre nosotros</h2> {/* título */}
+        <p className="mt-4 text-gray-600"> {/* texto */}
+          En GM Carpintería nos especializamos en la fabricación de muebles a medida,
+          ofreciendo soluciones personalizadas para cada cliente. Trabajamos con precisión,
+          diseño y materiales de alta calidad.
+        </p>
+      </section>
+
+      {/* PRODUCTOS DESTACADOS */}
+      <section> {/* sección de productos */}
+        <div className="mb-6 flex items-center justify-between"> {/* encabezado */}
+          <h2 className="text-2xl font-bold">Productos destacados</h2>
+
+          <Link href="/catalogo" className="text-sm underline"> {/* link al catálogo */}
+            Ver todos
+          </Link>
         </div>
-      </main>
+
+        {featuredProducts.length === 0 ? ( // si no hay productos
+          <p>No hay productos disponibles.</p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"> {/* grid de productos */}
+            {featuredProducts.map((product) => ( // recorre productos
+              <Link
+                key={product.id}
+                href={`/catalogo/${product.slug}`} // link al detalle
+                className="rounded-xl border p-5 shadow-sm hover:shadow-md transition"
+              >
+                <h3 className="text-lg font-semibold">{product.name}</h3> {/* nombre */}
+
+                <p className="mt-1 text-sm text-gray-500">
+                  {product.category.name} {/* categoría */}
+                </p>
+
+                <p className="mt-3 text-sm text-gray-600 line-clamp-2">
+                  {product.description} {/* descripción corta */}
+                </p>
+
+                <p className="mt-4 font-bold">
+                  ${product.price.toLocaleString("es-CO")} {/* precio */}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
     </div>
   );
 }
