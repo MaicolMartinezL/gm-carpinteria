@@ -61,7 +61,7 @@ export default async function NuevoProductoPage() { // crea la página para crea
     });
 
     revalidatePath("/admin/productos"); // refresca la lista de productos
-    redirect("/admin/productos"); // vuelve al listado después de crear
+    redirect("/admin/productos?success=1");
   }
 
   return ( // retorna la interfaz visual

@@ -41,12 +41,17 @@ async function toggleProductStatus(formData: FormData) { // función para activa
 }
 //--------------------------------
 
-export default async function AdminProductosPage() { // crea la página del panel admin para listar productos
+type PageProps = { // define el tipo de propiedades que recibirá la página
+  searchParams: Promise<{ success?: string }>; // indica que la URL puede traer un parámetro success
+};
+
+export default async function AdminProductosPage({ searchParams }: PageProps) { // recibe searchParams desde la URL
   const session = await verifySession(); // verifica si existe una sesión válida
 
   if (!session || session.role !== "ADMIN") { // valida que haya sesión y que el rol sea admin
     redirect("/admin/login"); // si no cumple, redirige al login
   }
+  const { success } = await searchParams; // extrae el parámetro success desde la URL
 
   const products = await prisma.product.findMany({ // consulta todos los productos
     include: {
@@ -76,6 +81,13 @@ export default async function AdminProductosPage() { // crea la página del pane
           <LogoutButton /> {/* botón de cerrar sesión */}
         </div>
       </div>
+
+      {success && ( // verifica si existe success en la URL
+        <div className="mb-4 rounded-lg bg-green-100 px-4 py-3 text-green-800"> {/* caja verde de confirmación */}
+          Producto creado correctamente {/* mensaje visible */}
+        </div>
+      )}
+
 
       {products.length === 0 ? ( // verifica si no hay productos
         <p>No hay productos registrados.</p> // muestra mensaje vacío

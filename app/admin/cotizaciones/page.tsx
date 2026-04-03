@@ -48,6 +48,24 @@ export default async function AdminCotizacionesPage() { // crea la página del p
     },
   });
 
+
+  function getStatusStyles(status: string) { // función que devuelve estilos según el estado
+  switch (status) {
+    case "PENDIENTE":
+      return "bg-yellow-100 text-yellow-800"; // amarillo
+
+    case "EN_PROCESO":
+      return "bg-blue-100 text-blue-800"; // azul
+
+    case "RESPONDIDA":
+      return "bg-green-100 text-green-800"; // verde
+
+    default:
+      return "bg-gray-100 text-gray-800"; // fallback
+  }
+}
+
+
   return (
         <main className="min-h-screen p-8"> {/* contenedor principal */}
   
@@ -59,12 +77,12 @@ export default async function AdminCotizacionesPage() { // crea la página del p
       {quotes.length === 0 ? ( // verifica si no existen cotizaciones
         <p>No hay cotizaciones aún.</p> // muestra mensaje si la tabla está vacía
       ) : (
-        <div className="overflow-x-auto"> {/* permite scroll horizontal en pantallas pequeñas */}
-          <table className="w-full border-collapse"> {/* tabla principal */}
-            <thead> {/* encabezado de la tabla */}
-              <tr className="bg-gray-100 text-left"> {/* fila del encabezado */}
-                <th className="p-3">Cliente</th> {/* columna cliente */}
-                <th className="p-3">Email</th> {/* columna email */}
+        <div className="overflow-x-auto rounded-xl border border-gray-700 bg-gray-900"> {/* permite scroll horizontal en pantallas pequeñas */}
+          <table className="w-full border border-gray-700 text-sm text-white"> {/* tabla principal */}
+            <thead className="bg-gray-800 text-left text-gray-200"> {/* encabezado de la tabla con fondo gris claro */}
+              <tr> {/* fila de encabezados */}
+                <th className="p-3">Cliente</th> {/* columna nombre del cliente */}
+                <th className="p-3">Email</th> {/* columna correo */}
                 <th className="p-3">Teléfono</th> {/* columna teléfono */}
                 <th className="p-3">Producto</th> {/* columna producto */}
                 <th className="p-3">Mensaje</th> {/* columna mensaje */}
@@ -75,21 +93,23 @@ export default async function AdminCotizacionesPage() { // crea la página del p
 
             <tbody> {/* cuerpo de la tabla */}
               {quotes.map((quote) => ( // recorre cada cotización
-                <tr key={quote.id} className="border-t align-top"> {/* crea una fila por cotización */}
-                  <td className="p-3">{quote.customerName}</td> {/* nombre del cliente */}
-                  <td className="p-3">{quote.customerEmail}</td> {/* correo del cliente */}
-                  <td className="p-3">{quote.customerPhone}</td> {/* teléfono del cliente */}
-                  <td className="p-3">{quote.product.name}</td> {/* nombre del producto */}
-                  <td className="p-3">{quote.message}</td> {/* mensaje de la solicitud */}
-                  <td className="p-3"> {/* celda donde estará el formulario de cambio de estado */}
-                    <QuoteStatusForm
-                      quoteId={quote.id} // envía el id de la cotización al componente
-                      currentStatus={quote.status} // envía el estado actual al componente
-                      onUpdate={updateQuoteStatus} // envía la función que actualiza el estado
-                    />
+                <tr key={quote.id} className="border-t border-gray-700 align-top"> {/* fila con borde oscuro suave */}
+                  <td className="p-3 text-white">{quote.customerName}</td> {/* nombre visible en blanco */}
+                  <td className="p-3 text-gray-200">{quote.customerEmail}</td> {/* email en gris claro */}
+                  <td className="p-3 text-gray-200">{quote.customerPhone}</td> {/* teléfono en gris claro */}
+                  <td className="p-3 text-white">{quote.product.name}</td> {/* producto en blanco */}
+                  <td className="p-3 text-gray-200">{quote.message}</td> {/* mensaje en gris claro */}
+
+                  <td className="p-3"> {/* celda del estado */}
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyles(quote.status)}`}
+                    >
+                      {quote.status}
+                    </span>
                   </td>
-                  <td className="p-3">
-                    {new Date(quote.createdAt).toLocaleDateString("es-CO")} {/* muestra la fecha formateada */}
+
+                  <td className="p-3 text-gray-200">
+                    {new Date(quote.createdAt).toLocaleDateString("es-CO")}
                   </td>
                 </tr>
               ))}
