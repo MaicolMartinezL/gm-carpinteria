@@ -1,45 +1,45 @@
-import type { Metadata } from "next"; // importa el tipo Metadata para definir información global del sitio
-import Link from "next/link"; // importa Link para navegar entre páginas sin recargar todo
-import "./globals.css"; // importa los estilos globales
+import type { Metadata } from "next";
+import Link from "next/link";
+import "./globals.css";
 
-export const metadata: Metadata = { // define metadatos globales del sitio
-  title: "GM Carpintería", // título principal del sitio
-  description: "Catálogo y cotizaciones para empresa de carpintería", // descripción general del proyecto
+export const metadata: Metadata = {
+  title: "GM Carpintería",
+  description: "Catálogo y cotizaciones para empresa de carpintería",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { // crea el layout raíz que envuelve toda la aplicación
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es"> {/* define el idioma principal del documento */}
-      <body className="min-h-screen bg-white text-black-900"> {/* define estilos base del body */}
-        <header className="border-b bg-white"> {/* crea el encabezado superior con borde inferior */}
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4"> {/* centra el contenido del header y organiza logo y navegación */}
-            <Link href="/" className="text-xl font-bold text-black"> {/* enlace al inicio del sitio */}
-              GM Carpintería {/* nombre o logo textual del proyecto */}
+    <html lang="es">
+      <body className="min-h-screen bg-white text-black">
+        <header className="border-b bg-white">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+            <Link href="/" className="text-xl font-bold text-black">
+              GM Carpintería
             </Link>
 
-            <nav className="flex items-center gap-6 text-sm font-medium text-black"> {/* navegación principal */}
-              <Link href="/" className="hover:text-black transition"> {/* enlace a la página de inicio */}
+            <nav className="flex items-center gap-6 text-sm font-medium text-black">
+              <Link href="/" className="transition hover:text-gray-700">
                 Inicio
               </Link>
 
-              <Link href="/catalogo" className="hover:text-black transition"> {/* enlace al catálogo */}
+              <Link href="/catalogo" className="transition hover:text-gray-700">
                 Catálogo
               </Link>
 
-              <Link href="/admin" className="hover:text-black transition"> {/* enlace al panel admin */}
+              <Link href="/admin" className="transition hover:text-gray-700">
                 Admin
               </Link>
             </nav>
           </div>
         </header>
 
-        <div className="mx-auto max-w-6xl px-6 py-10"> {/* contenedor principal para todas las páginas */}
-          {children} {/* aquí se renderiza el contenido de cada página */}
-        </div>
+        <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
 
-        <footer className="border-t bg-gray-100"> {/* pie de página con borde superior */}
-          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-red-600"> {/* contenedor del footer */}
-            © 2026 GM Carpintería. Todos los derechos reservados. {/* texto del footer */}
+        <footer className="border-t bg-gray-100">
+          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-gray-600">
+            © 2026 GM Carpintería. Todos los derechos reservados.
           </div>
         </footer>
       </body>

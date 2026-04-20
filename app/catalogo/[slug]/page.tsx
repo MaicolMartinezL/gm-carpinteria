@@ -1,52 +1,125 @@
-import Link from "next/link"; // importa el componente Link para navegar entre páginas
-import { prisma } from "@/lib/prisma"; // importa la conexión de Prisma que ya creaste para consultar la base de datos
-import { notFound } from "next/navigation"; // importa la función de Next.js que muestra una página 404 si no encuentra el producto
+import Image from "next/image";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import AddToQuoteButton from "@/components/add-to-quote-button";
 
-type ProductPageProps = { // define el tipo de las propiedades que recibirá esta página
-  params: Promise<{ slug: string }>; // indica que la ruta traerá un parámetro dinámico llamado slug
+type ProductPageProps = {
+  params: Promise<{ slug: string }>;
 };
 
-export default async function ProductPage({ params }: ProductPageProps) { // crea la página dinámica del producto y recibe los parámetros de la URL
-  const { slug } = await params; // extrae el slug enviado en la URL, por ejemplo "cocina-integral-basica"
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { slug } = await params;
 
-  const product = await prisma.product.findUnique({ // busca un único producto en la base de datos
-    where: { slug }, // busca específicamente por el campo slug
-    include: { category: true }, // también trae la categoría relacionada del producto
+  const product = await prisma.product.findUnique({
+    where: { slug },
+    include: {
+      category: true,
+      images: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
   });
 
-  if (!product) { // verifica si no se encontró ningún producto con ese slug
-    notFound(); // si no existe, muestra la página 404 de Next.js
+  if (!product || !product.active) {
+    notFound();
   }
 
-  return ( // retorna el contenido visual de la página
-    <main className="min-h-screen p-8"> {/* contenedor principal con altura mínima de pantalla y espacio interno */}
-      <div className="mx-auto max-w-3xl"> {/* centra el contenido y limita el ancho máximo */}
-        <p className="text-sm text-gray-500">Categoría: {product.category.name}</p> {/* muestra el nombre de la categoría */}
-        
-        <h1 className="mt-2 text-4xl font-bold">{product.name}</h1> {/* muestra el nombre del producto como título principal */}
-        
-        <p className="mt-4 text-lg text-gray-700">{product.description}</p> {/* muestra la descripción del producto */}
-        
-        <p className="mt-6 text-2xl font-semibold"> {/* crea el bloque visual para el precio */}
-          ${product.price.toLocaleString("es-CO")} {/* formatea el precio con separadores de miles estilo Colombia */}
-        </p>
+  const mainImage = product.images[0]?.url || "/placeholder-product.jpg";
 
-        <div className="mt-8 flex gap-4"> {/* crea un contenedor para botones con separación entre ellos */}
-          <Link
-            href={`/cotizacion?product=${product.slug}`} // crea un enlace hacia la página de cotización enviando el slug del producto en la URL
-            className="rounded-lg bg-black px-5 py-3 text-white" // aplica estilos para que visualmente se vea como botón
-            >
-            Solicitar cotización {/* texto que verá el usuario */}
-            </Link>
+  return (
+    <main className="min-h-screen p-8">
+      <div className="mx-auto max-w-5xl">
+        <p className="text-sm text-gray-500">Categoría: {product.category.name}</p>
 
-          <a
-            href="https://wa.me/573000000000" // crea un enlace directo a WhatsApp, luego cambias este número por el real de la empresa
-            target="_blank" // hace que el enlace se abra en una nueva pestaña
-            rel="noopener noreferrer" // añade seguridad al abrir enlaces externos
-            className="rounded-lg border px-5 py-3" // aplica estilos de borde y espaciado al enlace
-          >
-            WhatsApp {/* texto del botón secundario */}
-          </a>
+        <h1 className="mt-2 text-4xl font-bold">{product.name}</h1>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+          <div>
+            <div className="relative h-80 w-full overflow-hidden rounded-xl bg-gray-100">
+              <Image
+                src={mainImage}
+                alt={product.images[0]?.altText || product.name}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            {product.images.length > 1 && (
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                {product.images.slice(1).map((image) => (
+                  <div
+                    key={image.id}
+                    className="relative h-28 overflow-hidden rounded-lg bg-gray-100"
+                  >
+                    <Image
+                      src={image.url}
+                      alt={image.altText || product.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p className="text-lg text-gray-700">{product.description}</p>
+
+            <div className="mt-6 space-y-2 text-sm text-gray-600">
+              {product.material && (
+                <p>
+                  <span className="font-medium">Material:</span> {product.material}
+                </p>
+              )}
+              {product.color && (
+                <p>
+                  <span className="font-medium">Color:</span> {product.color}
+                </p>
+              )}
+            </div>
+
+            <p className="mt-6 text-2xl font-semibold">
+              ${product.priceBase.toLocaleString("es-CO")}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href={`/cotizacion?product=${product.slug}`}
+                className="rounded-lg bg-black px-5 py-3 text-white"
+              >
+                Solicitar cotización
+              </Link>
+
+              <AddToQuoteButton
+                product={{
+                  id: product.id,
+                  slug: product.slug,
+                  name: product.name,
+                  priceBase: product.priceBase,
+                  imageUrl: product.images[0]?.url || null,
+                }}
+              />
+              <Link
+                href="/cotizacion/seleccion"
+                className="rounded-lg border px-5 py-3"
+              >
+                Ver selección
+              </Link>
+              
+              <a
+                href="https://wa.me/573000000000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border px-5 py-3"
+              >
+                WhatsApp
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </main>
