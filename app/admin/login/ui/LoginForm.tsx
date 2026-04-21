@@ -1,45 +1,51 @@
-"use client"; // indica que este componente corre en el cliente porque usa hooks
+"use client";
 
-import { useActionState } from "react"; // importa el hook para manejar el estado de la acción
-import { login } from "@/app/actions/auth"; // importa la acción de login
+import { useActionState } from "react";
+import { login, type AuthState } from "@/app/actions/auth";
 
-export default function LoginForm() { // crea el componente del formulario
-  const [state, action, pending] = useActionState(login, undefined); // conecta el formulario con la acción del servidor
+const initialState: AuthState = {};
+
+export default function LoginForm() {
+  const [state, action, pending] = useActionState(login, initialState);
 
   return (
-    <form action={action} className="mt-6 space-y-4"> {/* formulario que ejecuta la acción login */}
-      <div> {/* grupo del campo email */}
-        <label htmlFor="email" className="mb-2 block font-medium">Correo</label> {/* etiqueta del campo */}
+    <form action={action} className="mt-6 space-y-4">
+      <div>
+        <label htmlFor="email" className="mb-2 block font-medium">
+          Correo
+        </label>
         <input
-          id="email" // id del input
-          name="email" // nombre que llegará al FormData
-          type="email" // tipo email
-          required // campo obligatorio
-          className="w-full rounded-lg border px-4 py-3" // estilos del input
+          id="email"
+          name="email"
+          type="email"
+          required
+          className="w-full rounded-lg border px-4 py-3"
         />
       </div>
 
-      <div> {/* grupo del campo contraseña */}
-        <label htmlFor="password" className="mb-2 block font-medium">Contraseña</label> {/* etiqueta del campo */}
+      <div>
+        <label htmlFor="password" className="mb-2 block font-medium">
+          Contraseña
+        </label>
         <input
-          id="password" // id del input
-          name="password" // nombre que llegará al FormData
-          type="password" // tipo password
-          required // campo obligatorio
-          className="w-full rounded-lg border px-4 py-3" // estilos del input
+          id="password"
+          name="password"
+          type="password"
+          required
+          className="w-full rounded-lg border px-4 py-3"
         />
       </div>
 
-      {state?.error ? ( // verifica si existe un error devuelto por la acción
-        <p className="text-sm text-red-600">{state.error}</p> // muestra el error
+      {state?.error ? (
+        <p className="text-sm text-red-600">{state.error}</p>
       ) : null}
 
       <button
-        type="submit" // indica que el botón envía el formulario
-        disabled={pending} // desactiva el botón mientras se procesa
-        className="w-full rounded-lg bg-black px-5 py-3 text-white disabled:opacity-50" // estilos del botón
+        type="submit"
+        disabled={pending}
+        className="w-full rounded-lg bg-black px-5 py-3 text-white disabled:opacity-50"
       >
-        {pending ? "Ingresando..." : "Ingresar"} {/* cambia el texto mientras carga */}
+        {pending ? "Ingresando..." : "Ingresar"}
       </button>
     </form>
   );

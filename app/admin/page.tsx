@@ -1,115 +1,121 @@
-import Link from "next/link"; // importa Link para navegar entre secciones del panel
-import { redirect } from "next/navigation"; // permite redirigir al login si no hay sesión válida
-import { prisma } from "@/lib/prisma"; // importa Prisma para consultar la base de datos
-import { verifySession } from "@/lib/auth"; // importa la función que verifica la sesión del admin
-import LogoutButton from "./components/LogoutButton"; // importa el botón de cerrar sesión
+import { QuoteStatus } from "@prisma/client";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { verifySession } from "@/lib/auth";
+import LogoutButton from "./components/LogoutButton";
 
-export default async function AdminDashboardPage() { // crea la página principal del panel admin
-  const session = await verifySession(); // verifica si existe sesión válida
+export default async function AdminDashboardPage() {
+  const session = await verifySession();
 
-  if (!session || session.role !== "ADMIN") { // valida que el usuario sea admin
-    redirect("/admin/login"); // redirige al login si no cumple
+  if (!session || session.role !== "ADMIN") {
+    redirect("/admin/login");
   }
 
-  const totalProducts = await prisma.product.count(); // cuenta todos los productos
-  const activeProducts = await prisma.product.count({ // cuenta solo productos activos
+  const totalProducts = await prisma.product.count();
+  const activeProducts = await prisma.product.count({
     where: {
       active: true,
     },
   });
 
-  const totalQuotes = await prisma.quote.count(); // cuenta todas las cotizaciones
-  const pendingQuotes = await prisma.quote.count({ // cuenta cotizaciones pendientes
+  const totalQuotes = await prisma.quote.count();
+
+  const pendingQuotes = await prisma.quote.count({
     where: {
-      status: "PENDIENTE",
+      status: QuoteStatus.NEW,
     },
   });
 
-  const inProgressQuotes = await prisma.quote.count({ // cuenta cotizaciones en proceso
+  const inProgressQuotes = await prisma.quote.count({
     where: {
-      status: "EN_PROCESO",
+      status: QuoteStatus.IN_PROGRESS,
     },
   });
 
-  const answeredQuotes = await prisma.quote.count({ // cuenta cotizaciones respondidas
+  const answeredQuotes = await prisma.quote.count({
     where: {
-      status: "RESPONDIDA",
+      status: QuoteStatus.RESPONDED,
     },
   });
 
-  const recentQuotes = await prisma.quote.findMany({ // consulta las cotizaciones más recientes
+  const recentQuotes = await prisma.quote.findMany({
     include: {
-      product: true, // incluye el producto asociado
+      items: {
+        include: {
+          product: true,
+        },
+      },
     },
     orderBy: {
-      createdAt: "desc", // ordena de más reciente a más antigua
+      createdAt: "desc",
     },
-    take: 5, // trae solo las 5 más recientes
+    take: 5,
   });
 
   return (
-    <main className="min-h-screen p-8"> {/* contenedor principal */}
-      <div className="mb-8 flex items-center justify-between"> {/* encabezado principal */}
+    <main className="min-h-screen p-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard admin</h1> {/* título */}
-          <p className="mt-1 text-sm text-gray-600">Resumen general del sistema.</p> {/* texto de apoyo */}
+          <h1 className="text-3xl font-bold">Dashboard admin</h1>
+          <p className="mt-1 text-sm text-gray-600">Resumen general del sistema.</p>
         </div>
 
-        <LogoutButton /> {/* botón de cerrar sesión */}
+        <LogoutButton />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"> {/* grid de tarjetas de métricas */}
-        <div className="rounded-xl border p-5 shadow-sm"> {/* tarjeta */}
-          <p className="text-sm text-gray-500">Total productos</p> {/* etiqueta */}
-          <h2 className="mt-2 text-3xl font-bold">{totalProducts}</h2> {/* valor */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-xl border p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Total productos</p>
+          <h2 className="mt-2 text-3xl font-bold">{totalProducts}</h2>
         </div>
 
-        <div className="rounded-xl border p-5 shadow-sm"> {/* tarjeta */}
-          <p className="text-sm text-gray-500">Productos activos</p> {/* etiqueta */}
-          <h2 className="mt-2 text-3xl font-bold">{activeProducts}</h2> {/* valor */}
+        <div className="rounded-xl border p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Productos activos</p>
+          <h2 className="mt-2 text-3xl font-bold">{activeProducts}</h2>
         </div>
 
-        <div className="rounded-xl border p-5 shadow-sm"> {/* tarjeta */}
-          <p className="text-sm text-gray-500">Total cotizaciones</p> {/* etiqueta */}
-          <h2 className="mt-2 text-3xl font-bold">{totalQuotes}</h2> {/* valor */}
+        <div className="rounded-xl border p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Total cotizaciones</p>
+          <h2 className="mt-2 text-3xl font-bold">{totalQuotes}</h2>
         </div>
 
-        <div className="rounded-xl border p-5 shadow-sm"> {/* tarjeta */}
-          <p className="text-sm text-gray-500">Pendientes</p> {/* etiqueta */}
-          <h2 className="mt-2 text-3xl font-bold">{pendingQuotes}</h2> {/* valor */}
+        <div className="rounded-xl border p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Nuevas</p>
+          <h2 className="mt-2 text-3xl font-bold">{pendingQuotes}</h2>
         </div>
 
-        <div className="rounded-xl border p-5 shadow-sm"> {/* tarjeta */}
-          <p className="text-sm text-gray-500">En proceso</p> {/* etiqueta */}
-          <h2 className="mt-2 text-3xl font-bold">{inProgressQuotes}</h2> {/* valor */}
+        <div className="rounded-xl border p-5 shadow-sm">
+          <p className="text-sm text-gray-500">En proceso</p>
+          <h2 className="mt-2 text-3xl font-bold">{inProgressQuotes}</h2>
         </div>
 
-        <div className="rounded-xl border p-5 shadow-sm"> {/* tarjeta */}
-          <p className="text-sm text-gray-500">Respondidas</p> {/* etiqueta */}
-          <h2 className="mt-2 text-3xl font-bold">{answeredQuotes}</h2> {/* valor */}
+        <div className="rounded-xl border p-5 shadow-sm">
+          <p className="text-sm text-gray-500">Respondidas</p>
+          <h2 className="mt-2 text-3xl font-bold">{answeredQuotes}</h2>
         </div>
       </div>
 
-      <div className="mt-10 grid gap-6 lg:grid-cols-2"> {/* sección inferior */}
-        <section className="rounded-xl border p-5 shadow-sm"> {/* bloque de accesos rápidos */}
-          <h2 className="text-xl font-bold">Accesos rápidos</h2> {/* título */}
-          <div className="mt-4 flex flex-wrap gap-3"> {/* contenedor de botones */}
+      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <section className="rounded-xl border p-5 shadow-sm">
+          <h2 className="text-xl font-bold">Accesos rápidos</h2>
+          <div className="mt-4 flex flex-wrap gap-3">
             <Link
-              href="/admin/cotizaciones" // lleva al módulo de cotizaciones
+              href="/admin/cotizaciones"
               className="rounded-lg bg-black px-4 py-2 text-white"
             >
               Ver cotizaciones
             </Link>
 
             <Link
-              href="/admin/productos" // lleva al módulo de productos
+              href="/admin/productos"
               className="rounded-lg border px-4 py-2"
             >
               Gestionar productos
             </Link>
 
             <Link
-              href="/admin/productos/nuevo" // lleva al formulario de nuevo producto
+              href="/admin/productos/nuevo"
               className="rounded-lg border px-4 py-2"
             >
               Nuevo producto
@@ -117,18 +123,24 @@ export default async function AdminDashboardPage() { // crea la página principa
           </div>
         </section>
 
-        <section className="rounded-xl border p-5 shadow-sm"> {/* bloque de cotizaciones recientes */}
-          <h2 className="text-xl font-bold">Cotizaciones recientes</h2> {/* título */}
+        <section className="rounded-xl border p-5 shadow-sm">
+          <h2 className="text-xl font-bold">Cotizaciones recientes</h2>
 
-          {recentQuotes.length === 0 ? ( // verifica si no hay cotizaciones
+          {recentQuotes.length === 0 ? (
             <p className="mt-4 text-sm text-gray-600">No hay cotizaciones recientes.</p>
           ) : (
-            <div className="mt-4 space-y-4"> {/* lista de cotizaciones */}
-              {recentQuotes.map((quote) => ( // recorre cada cotización
-                <div key={quote.id} className="rounded-lg border p-4"> {/* tarjeta por cotización */}
-                  <p className="font-semibold">{quote.customerName}</p> {/* nombre del cliente */}
-                  <p className="text-sm text-gray-500">{quote.product.name}</p> {/* producto */}
-                  <p className="mt-2 text-sm">{quote.status}</p> {/* estado */}
+            <div className="mt-4 space-y-4">
+              {recentQuotes.map((quote) => (
+                <div key={quote.id} className="rounded-lg border p-4">
+                  <p className="font-semibold">{quote.customerName}</p>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    {quote.items.length > 0
+                      ? quote.items.map((item) => item.product.name).join(", ")
+                      : "Sin productos asociados"}
+                  </p>
+
+                  <p className="mt-2 text-sm">{quote.status}</p>
                 </div>
               ))}
             </div>

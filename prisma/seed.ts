@@ -99,7 +99,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "/products/centro.jpg",
+            url: "/placeholder-product.jpg",
             altText: "Centro de entretenimiento moderno",
             sortOrder: 0,
           },
@@ -121,7 +121,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "/products/cocina.jpg",
+            url: "/placeholder-product.jpg",
             altText: "Cocina integral básica",
             sortOrder: 0,
           },
@@ -143,7 +143,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "/products/escritorio.jpg",
+            url: "/placeholder-product.jpg",
             altText: "Escritorio ejecutivo",
             sortOrder: 0,
           },
@@ -164,7 +164,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "/portfolio/cocina-proyecto-1.jpg",
+            url: "/placeholder-product.jpg",
             altText: "Proyecto de cocina terminada",
             sortOrder: 0,
           },

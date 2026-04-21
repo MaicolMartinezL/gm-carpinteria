@@ -1,60 +1,91 @@
-"use server"; // indica que este archivo contiene funciones que corren en el servidor
+"use server";
 
-import { z } from "zod"; // importa Zod para validar datos del formulario
-import bcrypt from "bcryptjs"; // importa bcrypt para comparar contraseñas
-import { redirect } from "next/navigation"; // importa redirect para navegar después del login
-import { prisma } from "@/lib/prisma"; // importa Prisma para consultar usuarios
-import { createSession, deleteSession } from "@/lib/auth"; // importa utilidades de sesión
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
+import { SignJWT } from "jose";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-const LoginSchema = z.object({ // define el esquema de validación del formulario
-  email: z.email("Ingresa un correo válido").trim(), // valida que el email sea correcto
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"), // valida longitud mínima
-});
+export type AuthState = {
+  error?: string;
+};
 
-export type LoginState = { // define el estado que devolverá la acción al formulario
-  error?: string; // mensaje de error general
-} | undefined;
+const secretKey = process.env.SESSION_SECRET;
 
-export async function login(state: LoginState, formData: FormData) { // define la acción de login
-  const validatedFields = LoginSchema.safeParse({ // valida los datos que llegan del formulario
-    email: formData.get("email"), // toma el email del formulario
-    password: formData.get("password"), // toma la contraseña del formulario
-  });
-
-  if (!validatedFields.success) { // verifica si la validación falló
-    return { error: "Credenciales inválidas." }; // devuelve error simple al usuario
-  }
-
-  const { email, password } = validatedFields.data; // extrae email y contraseña validados
-
-  const user = await prisma.user.findUnique({ // busca un usuario por email
-    where: { email }, // filtra por el email ingresado
-  });
-
-  if (!user) { // verifica si no existe el usuario
-    return { error: "Usuario o contraseña incorrectos." }; // devuelve error genérico
-  }
-
-  const passwordMatch = await bcrypt.compare(password, user.password); // compara la contraseña ingresada con la hasheada
-
-  if (!passwordMatch) { // verifica si la contraseña no coincide
-    return { error: "Usuario o contraseña incorrectos." }; // devuelve error genérico
-  }
-
-  if (user.role !== "ADMIN") { // verifica que el usuario tenga rol admin
-    return { error: "No tienes permisos de administrador." }; // bloquea acceso si no es admin
-  }
-
-  await createSession({ // crea la sesión del usuario autenticado
-    userId: user.id, // guarda el id del usuario
-    email: user.email, // guarda el email del usuario
-    role: user.role, // guarda el rol del usuario
-  });
-
-  redirect("/admin/cotizaciones"); // redirige al panel admin después de iniciar sesión
+if (!secretKey) {
+  throw new Error("SESSION_SECRET no está definida");
 }
 
-export async function logout() { // define la acción para cerrar sesión
-  await deleteSession(); // elimina la cookie de sesión
-  redirect("/admin/login"); // redirige al login
+const encodedKey = new TextEncoder().encode(secretKey);
+
+async function createSession(payload: {
+  userId: number;
+  email: string;
+  role: "ADMIN" | "CLIENT";
+}) {
+  const token = await new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(encodedKey);
+
+  const cookieStore = await cookies();
+
+  cookieStore.set("session", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+}
+
+export async function login(
+  _prevState: AuthState | void,
+  formData: FormData
+): Promise<AuthState | void> {
+  const email = formData.get("email")?.toString().trim().toLowerCase() || "";
+  const password = formData.get("password")?.toString() || "";
+
+  if (!email || !password) {
+    return { error: "Correo y contraseña son obligatorios." };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return { error: "Credenciales incorrectas." };
+  }
+
+  if (user.status !== "ACTIVE") {
+    return { error: "Tu cuenta está bloqueada o inactiva." };
+  }
+
+  const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+
+  if (!isValidPassword) {
+    return { error: "Credenciales incorrectas." };
+  }
+
+  await createSession({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  });
+
+  if (user.role === "ADMIN") {
+    redirect("/admin");
+  }
+
+  redirect("/");
+}
+
+export async function logout() {
+  "use server";
+
+  const cookieStore = await cookies();
+  cookieStore.delete("session");
+  redirect("/admin/login");
 }

@@ -1,43 +1,45 @@
-import { NextResponse } from "next/server"; // importa la respuesta de Next para continuar o redirigir
-import type { NextRequest } from "next/server"; // importa el tipo de request que usa el middleware
-import { jwtVerify } from "jose"; // importa la función para verificar el token de sesión
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
-const secretKey = process.env.SESSION_SECRET; // obtiene la clave secreta desde variables de entorno
+const secretKey = process.env.SESSION_SECRET;
 
-if (!secretKey) { // valida que la variable exista
-  throw new Error("SESSION_SECRET no está definida"); // lanza error si falta
+if (!secretKey) {
+  throw new Error("SESSION_SECRET no está definida");
 }
 
-const encodedKey = new TextEncoder().encode(secretKey); // convierte la clave a formato binario para jose
+const encodedKey = new TextEncoder().encode(secretKey);
 
-export async function middleware(request: NextRequest) { // crea el middleware que se ejecuta en cada request protegida
-  const { pathname } = request.nextUrl; // obtiene la ruta actual que el usuario quiere visitar
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  if (pathname === "/admin/login") { // permite el acceso libre al login admin
-    return NextResponse.next(); // deja pasar al login sin validar sesión
+  if (pathname === "/admin/login") {
+    return NextResponse.next();
   }
 
-  const sessionCookie = request.cookies.get("session")?.value; // intenta leer la cookie de sesión
+  const sessionCookie = request.cookies.get("session")?.value;
 
-  if (!sessionCookie) { // si no existe sesión
-    return NextResponse.redirect(new URL("/admin/login", request.url)); // redirige al login
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
   try {
-    const { payload } = await jwtVerify(sessionCookie, encodedKey, { // verifica que el token sea válido y esté firmado correctamente
-      algorithms: ["HS256"], // exige el algoritmo correcto
+    const { payload } = await jwtVerify(sessionCookie, encodedKey, {
+      algorithms: ["HS256"],
     });
 
-    if (payload.role !== "ADMIN") { // verifica que el rol del usuario sea ADMIN
-      return NextResponse.redirect(new URL("/admin/login", request.url)); // si no es admin, redirige al login
+    if (payload.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
 
-    return NextResponse.next(); // si la sesión es válida y es admin, deja pasar
+    return NextResponse.next();
   } catch {
-    return NextResponse.redirect(new URL("/admin/login", request.url)); // si el token es inválido o expiró, redirige al login
+    const response = NextResponse.redirect(new URL("/admin/login", request.url));
+    response.cookies.delete("session");
+    return response;
   }
 }
 
-export const config = { // define en qué rutas se aplica el middleware
-  matcher: ["/admin/:path*"], // protege todas las rutas que empiecen por /admin
+export const config = {
+  matcher: ["/admin/:path*"],
 };
