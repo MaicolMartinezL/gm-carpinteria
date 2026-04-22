@@ -120,6 +120,37 @@ export default async function AdminDashboardPage() {
             >
               Nuevo producto
             </Link>
+
+            <Link
+              href="/admin/agenda"
+              className="rounded-lg border px-4 py-2"
+            >
+              Gestionar agenda
+            </Link>
+
+            <Link
+              href="/admin/portafolio"
+              className="rounded-lg border px-4 py-2"
+            >
+              Gestionar portafolio
+            </Link>
+
+
+            <Link
+              href="/admin/usuarios"
+              className="rounded-lg border px-4 py-2"
+            >
+              Gestionar usuarios
+            </Link>
+
+            <Link
+              href="/admin/contacto"
+              className="rounded-lg border px-4 py-2"
+            >
+              Ver mensajes
+            </Link>
+
+
           </div>
         </section>
 

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { verifySession } from "@/lib/auth";
 
 type QuoteProductInput = {
   id: number;
@@ -7,6 +8,7 @@ type QuoteProductInput = {
 
 export async function POST(request: Request) {
   try {
+    const session = await verifySession();
     const body = await request.json();
 
     const customerName = body.customerName?.trim() || "";
@@ -54,6 +56,7 @@ export async function POST(request: Request) {
         customerEmail,
         customerPhone: customerPhone || null,
         needsDescription,
+        customerId: session?.role === "CLIENT" ? session.userId : null,
         items: {
           create: existingProducts.map((product) => ({
             productId: product.id,

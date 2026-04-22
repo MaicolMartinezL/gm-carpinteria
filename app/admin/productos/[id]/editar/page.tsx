@@ -1,141 +1,86 @@
-import { redirect } from "next/navigation"; // permite redirigir si no hay sesión o al guardar
-import { revalidatePath } from "next/cache"; // permite refrescar la lista de productos después de editar
-import { prisma } from "@/lib/prisma"; // importa Prisma para consultar y actualizar datos
-import { verifySession } from "@/lib/auth"; // importa la verificación de sesión
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { verifySession } from "@/lib/auth";
+import ProductForm from "../../components/ProductForm";
+import { updateProduct } from "../../actions";
 
-type EditProductPageProps = { // define el tipo de props que recibe la página
-  params: Promise<{ id: string }>; // recibe el id desde la URL
+type EditProductPageProps = {
+  params: Promise<{ id: string }>;
 };
 
-export default async function EditProductPage({ params }: EditProductPageProps) { // crea la página de edición
-  const { id } = await params; // obtiene el id desde la URL
+export default async function EditProductPage({ params }: EditProductPageProps) {
+  const session = await verifySession();
 
-  const session = await verifySession(); // verifica sesión
-
-  if (!session || session.role !== "ADMIN") { // valida que sea admin
-    redirect("/admin/login"); // redirige si no lo es
+  if (!session || session.role !== "ADMIN") {
+    redirect("/admin/login");
   }
 
-  const productId = Number(id); // convierte el id a número
+  const { id } = await params;
+  const productId = Number(id);
 
-  if (Number.isNaN(productId)) { // valida que el id sea válido
-    throw new Error("ID inválido");
+  if (Number.isNaN(productId)) {
+    notFound();
   }
 
-  const product = await prisma.product.findUnique({ // busca el producto
-    where: { id: productId }, // por id
-  });
-
-  if (!product) { // si no existe
-    throw new Error("Producto no encontrado");
-  }
-
-  const categories = await prisma.category.findMany({ // trae categorías
-    orderBy: { name: "asc" }, // ordenadas
-  });
-
-  async function updateProduct(formData: FormData) { // server action para actualizar
-    "use server";
-
-    const session = await verifySession(); // vuelve a verificar sesión
-
-    if (!session || session.role !== "ADMIN") {
-      throw new Error("No autorizado");
-    }
-
-    const name = formData.get("name")?.toString().trim() || ""; // nombre
-    const slug = formData.get("slug")?.toString().trim() || ""; // slug
-    const description = formData.get("description")?.toString().trim() || ""; // descripción
-    const priceValue = formData.get("price")?.toString() || ""; // precio texto
-    const categoryIdValue = formData.get("categoryId")?.toString() || ""; // categoría texto
-
-    const price = Number(priceValue); // convierte precio
-    const categoryId = Number(categoryIdValue); // convierte categoría
-
-    if (!name || !slug || !description || Number.isNaN(price) || Number.isNaN(categoryId)) {
-      throw new Error("Datos inválidos");
-    }
-
-    await prisma.product.update({ // actualiza el producto
-      where: { id: productId }, // por id
-      data: {
-        name,
-        slug,
-        description,
-        price,
-        category: {
-          connect: { id: categoryId }, // conecta nueva categoría
+  const [product, categories] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        images: {
+          orderBy: {
+            sortOrder: "asc",
+          },
         },
       },
-    });
+    }),
+    prisma.category.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    }),
+  ]);
 
-    revalidatePath("/admin/productos"); // refresca lista
-    redirect("/admin/productos"); // vuelve al listado
+  if (!product) {
+    notFound();
   }
 
   return (
     <main className="min-h-screen p-8">
-      <div className="mx-auto max-w-2xl">
-        <h1 className="text-3xl font-bold">Editar producto</h1>
-
-        <form action={updateProduct} className="mt-8 space-y-5">
-
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <label className="mb-2 block font-medium">Nombre</label>
-            <input
-              name="name"
-              defaultValue={product.name}
-              className="w-full rounded-lg border px-4 py-3"
-            />
+            <h1 className="text-3xl font-bold">Editar producto</h1>
+            <p className="mt-2 text-gray-600">
+              Actualiza la información del producto seleccionado.
+            </p>
           </div>
 
-          <div>
-            <label className="mb-2 block font-medium">Slug</label>
-            <input
-              name="slug"
-              defaultValue={product.slug}
-              className="w-full rounded-lg border px-4 py-3"
-            />
-          </div>
+          <Link href="/admin/productos" className="rounded-lg border px-4 py-2">
+            Volver
+          </Link>
+        </div>
 
-          <div>
-            <label className="mb-2 block font-medium">Descripción</label>
-            <textarea
-              name="description"
-              defaultValue={product.description}
-              className="w-full rounded-lg border px-4 py-3"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block font-medium">Precio</label>
-            <input
-              name="price"
-              type="number"
-              defaultValue={product.price}
-              className="w-full rounded-lg border px-4 py-3"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block font-medium">Categoría</label>
-            <select
-              name="categoryId"
-              defaultValue={product.categoryId}
-              className="w-full rounded-lg border px-4 py-3"
-            >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button className="rounded-lg bg-black px-5 py-3 text-white">
-            Guardar cambios
-          </button>
-        </form>
+        <ProductForm
+          action={updateProduct}
+          categories={categories}
+          submitLabel="Guardar cambios"
+          defaultValues={{
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            material: product.material,
+            color: product.color,
+            priceBase: product.priceBase,
+            categoryId: product.categoryId,
+            imageUrl: product.images[0]?.url || "",
+            active: product.active,
+          }}
+        />
       </div>
     </main>
   );
