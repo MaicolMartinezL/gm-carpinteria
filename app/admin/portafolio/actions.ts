@@ -39,7 +39,12 @@ export async function createPortfolioProject(
   const description = formData.get("description")?.toString().trim() || "";
   const location = formData.get("location")?.toString().trim() || "";
   const projectDate = formData.get("projectDate")?.toString() || "";
-  const imageUrl = formData.get("imageUrl")?.toString().trim() || "";
+  const imageUrlsValue = formData.get("imageUrls")?.toString() || "";
+
+  const imageUrls = imageUrlsValue
+    .split("\n")
+    .map((url) => url.trim())
+    .filter(Boolean);
 
   if (!title || !category || !description) {
     return { error: "Completa los campos obligatorios." };
@@ -67,15 +72,13 @@ export async function createPortfolioProject(
       location: location || null,
       projectDate: projectDate ? new Date(projectDate) : null,
       active: true,
-      images: imageUrl
+      images: imageUrls.length > 0
         ? {
-            create: [
-              {
-                url: imageUrl,
-                altText: title,
-                sortOrder: 0,
-              },
-            ],
+            create: imageUrls.map((url, index) => ({
+              url,
+              altText: title,
+              sortOrder: index,
+            })),
           }
         : undefined,
     },
@@ -96,10 +99,15 @@ export async function updatePortfolioProject(
   const description = formData.get("description")?.toString().trim() || "";
   const location = formData.get("location")?.toString().trim() || "";
   const projectDate = formData.get("projectDate")?.toString() || "";
-  const imageUrl = formData.get("imageUrl")?.toString().trim() || "";
-  const activeValue = formData.get("active")?.toString();
+  const imageUrlsValue = formData.get("imageUrls")?.toString() || "";
+
+  const imageUrls = imageUrlsValue
+    .split("\n")
+    .map((url) => url.trim())
+    .filter(Boolean);
 
   const projectId = Number(projectIdValue);
+  const activeValue = formData.get("active")?.toString();
 
   if (Number.isNaN(projectId)) {
     return { error: "El proyecto no es válido." };
@@ -130,25 +138,21 @@ export async function updatePortfolioProject(
     },
   });
 
-  if (imageUrl) {
-    if (project.images.length > 0) {
-      await prisma.portfolioImage.update({
-        where: { id: project.images[0].id },
-        data: {
-          url: imageUrl,
-          altText: title,
-        },
-      });
-    } else {
-      await prisma.portfolioImage.create({
-        data: {
-          url: imageUrl,
-          altText: title,
-          sortOrder: 0,
-          projectId: project.id,
-        },
-      });
-    }
+  if (imageUrls.length > 0) {
+    await prisma.portfolioImage.deleteMany({
+      where: {
+        projectId: project.id,
+      },
+    });
+
+    await prisma.portfolioImage.createMany({
+      data: imageUrls.map((url, index) => ({
+        url,
+        altText: title,
+        sortOrder: index,
+        projectId: project.id,
+      })),
+    });
   }
 
   return { success: "Proyecto actualizado correctamente." };

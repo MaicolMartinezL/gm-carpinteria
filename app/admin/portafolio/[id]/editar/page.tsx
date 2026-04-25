@@ -66,7 +66,7 @@ export default async function EditPortfolioProjectPage({ params }: EditPageProps
             projectDate: project.projectDate
               ? new Date(project.projectDate).toISOString().split("T")[0]
               : "",
-            imageUrl: project.images[0]?.url || "",
+            imageUrl: project.images.map((image) => image.url).join("\n"),
             active: project.active,
           }}
         />

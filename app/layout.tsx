@@ -3,11 +3,24 @@ import Link from "next/link";
 import "./globals.css";
 import { verifySession } from "@/lib/auth";
 import LogoutButton from "@/components/logout-button";
+import WhatsAppFloatingButton from "@/components/whatsapp-floating-button";
+import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "GM Carpintería",
-  description: "Catálogo y cotizaciones para empresa de carpintería",
+  title: "GM Carpintería | Muebles a medida en Colombia",
+  description:
+  "Fabricación de muebles a medida: cocinas, closets, oficinas y más. Solicita tu cotización en GM Carpintería.",
+  icons: {
+    icon: "/icon.jpg",
+  },
+
+  openGraph: {
+    title: "GM Carpintería",
+    description: "Muebles a medida para tu hogar y oficina.",
+    images: ["/og-image.jpg"],
+  },
 };
+
 
 export default async function RootLayout({
   children,
@@ -19,8 +32,17 @@ export default async function RootLayout({
       <body className="min-h-screen bg-white text-black">
         <header className="border-b bg-white">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            <Link href="/" className="text-xl font-bold text-black">
-              GM Carpintería
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/logo.jpg"
+                alt="GM Carpintería"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+              <span className="text-xl font-bold text-black">
+                GM Carpintería
+              </span>
             </Link>
 
             <nav className="flex flex-wrap items-center gap-6 text-sm font-medium text-black">
@@ -92,6 +114,8 @@ export default async function RootLayout({
             © 2026 GM Carpintería. Todos los derechos reservados.
           </div>
         </footer>
+
+        <WhatsAppFloatingButton />
       </body>
     </html>
   );

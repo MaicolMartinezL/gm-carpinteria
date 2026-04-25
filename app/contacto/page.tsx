@@ -29,7 +29,7 @@ export default function ContactPage() {
             </div>
 
             <a
-              href="https://wa.me/573044170401"
+              href="https://wa.me/573044170401?text=Hola,%20quiero%20información%20sobre%20sus%20servicios"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 inline-block rounded-lg bg-green-600 px-5 py-3 text-white"

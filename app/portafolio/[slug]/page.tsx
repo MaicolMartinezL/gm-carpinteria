@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import ImageLightbox from "@/components/image-lightbox";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -41,32 +42,7 @@ export default async function PortfolioProjectPage({
 
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
           <div>
-            <div className="relative h-80 w-full overflow-hidden rounded-xl bg-gray-100">
-              <Image
-                src={mainImage}
-                alt={project.images[0]?.altText || project.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            {project.images.length > 1 && (
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                {project.images.slice(1).map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative h-28 overflow-hidden rounded-lg bg-gray-100"
-                  >
-                    <Image
-                      src={image.url}
-                      alt={image.altText || project.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <ImageLightbox images={project.images} title={project.title} />
           </div>
 
           <div>
@@ -96,7 +72,9 @@ export default async function PortfolioProjectPage({
               </Link>
 
               <a
-                href="https://wa.me/573000000000"
+                href={`https://wa.me/573044170401?text=${encodeURIComponent(
+                  `Hola, quiero información sobre el proyecto "${project.title}"`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-lg border px-5 py-3"

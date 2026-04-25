@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import AddToQuoteButton from "@/components/add-to-quote-button";
+import ImageLightbox from "@/components/image-lightbox";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -27,8 +28,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const mainImage = product.images[0]?.url || "/placeholder-product.jpg";
-
+  
   return (
     <main className="min-h-screen p-8">
       <div className="mx-auto max-w-5xl">
@@ -38,32 +38,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
           <div>
-            <div className="relative h-80 w-full overflow-hidden rounded-xl bg-gray-100">
-              <Image
-                src={mainImage}
-                alt={product.images[0]?.altText || product.name}
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            {product.images.length > 1 && (
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                {product.images.slice(1).map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative h-28 overflow-hidden rounded-lg bg-gray-100"
-                  >
-                    <Image
-                      src={image.url}
-                      alt={image.altText || product.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <ImageLightbox
+              images={
+                product.images.length > 0
+                  ? product.images
+                  : [
+                      {
+                        id: 0,
+                        url: "/placeholder-product.jpg",
+                        altText: product.name,
+                      },
+                    ]
+              }
+              title={product.name}
+            />
           </div>
 
           <div>
@@ -111,7 +99,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </Link>
               
               <a
-                href="https://wa.me/573000000000"
+                href={`https://wa.me/573044170401?text=${encodeURIComponent(
+                  `Hola, quiero cotizar el producto "${product.name}"`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-lg border px-5 py-3"

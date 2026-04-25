@@ -108,17 +108,22 @@ export default function PortfolioForm({
       </div>
 
       <div>
-        <label htmlFor="imageUrl" className="mb-2 block font-medium">
-          URL de imagen principal
+        <label htmlFor="imageUrls" className="mb-2 block font-medium">
+          URLs de imágenes
         </label>
-        <input
-          id="imageUrl"
-          name="imageUrl"
-          type="text"
+        <textarea
+          id="imageUrls"
+          name="imageUrls"
+          rows={4}
           defaultValue={defaultValues?.imageUrl || ""}
           className="w-full rounded-lg border px-4 py-3"
-          placeholder="/placeholder-product.jpg"
+          placeholder={`/portfolio/cocina-familiar-1.jpg
+      /portfolio/cocina-familiar-2.jpg
+      /portfolio/cocina-familiar-3.jpg`}
         />
+        <p className="mt-2 text-sm text-gray-500">
+          Escribe una imagen por línea. La primera será la imagen principal.
+        </p>
       </div>
 
       {typeof defaultValues?.active === "boolean" ? (
