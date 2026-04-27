@@ -1,8 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
-import { UserRole, UserStatus } from "@prisma/client";
 import { updateUser, type UserState } from "../actions";
+
+type UserRole = "ADMIN" | "CLIENT";
+type UserStatus = "ACTIVE" | "BLOCKED";
 
 type UserUpdateFormProps = {
   userId: number;
@@ -35,8 +37,8 @@ export default function UserUpdateForm({
           defaultValue={currentRole}
           className="w-full rounded-lg border px-4 py-3"
         >
-          <option value={UserRole.CLIENT}>CLIENT</option>
-          <option value={UserRole.ADMIN}>ADMIN</option>
+          <option value="CLIENT">CLIENT</option>
+          <option value="ADMIN">ADMIN</option>
         </select>
       </div>
 
@@ -51,8 +53,8 @@ export default function UserUpdateForm({
           className="w-full rounded-lg border px-4 py-3"
           disabled={isCurrentAdmin}
         >
-          <option value={UserStatus.ACTIVE}>ACTIVE</option>
-          <option value={UserStatus.BLOCKED}>BLOCKED</option>
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="BLOCKED">BLOCKED</option>
         </select>
       </div>
 

@@ -1,11 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
-import { QuoteStatus } from "@prisma/client";
 import {
   updateQuote,
   type UpdateQuoteState,
 } from "../actions";
+
+type QuoteStatus = "NEW" | "IN_PROGRESS" | "RESPONDED" | "CLOSED";
 
 type QuoteUpdateFormProps = {
   quoteId: number;
@@ -36,10 +37,10 @@ export default function QuoteUpdateForm({
           defaultValue={currentStatus}
           className="w-full rounded-lg border px-4 py-3"
         >
-          <option value={QuoteStatus.NEW}>NEW</option>
-          <option value={QuoteStatus.IN_PROGRESS}>IN_PROGRESS</option>
-          <option value={QuoteStatus.RESPONDED}>RESPONDED</option>
-          <option value={QuoteStatus.CLOSED}>CLOSED</option>
+          <option value="NEW">NEW</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="RESPONDED">RESPONDED</option>
+          <option value="CLOSED">CLOSED</option>
         </select>
       </div>
 

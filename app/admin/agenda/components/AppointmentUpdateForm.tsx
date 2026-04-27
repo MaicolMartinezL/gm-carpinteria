@@ -1,11 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
-import { AppointmentStatus } from "@prisma/client";
 import {
   updateAppointment,
   type UpdateAppointmentState,
 } from "../actions";
+
+type AppointmentStatus = "PENDING" | "CONFIRMED" | "CANCELLED";
 
 type AppointmentUpdateFormProps = {
   appointmentId: number;
@@ -37,9 +38,9 @@ export default function AppointmentUpdateForm({
           defaultValue={currentStatus}
           className="w-full rounded-lg border px-4 py-3"
         >
-          <option value={AppointmentStatus.PENDING}>PENDING</option>
-          <option value={AppointmentStatus.CONFIRMED}>CONFIRMED</option>
-          <option value={AppointmentStatus.CANCELLED}>CANCELLED</option>
+          <option value="PENDING">PENDING</option>
+          <option value="CONFIRMED">CONFIRMED</option>
+          <option value="CANCELLED">CANCELLED</option>
         </select>
       </div>
 
