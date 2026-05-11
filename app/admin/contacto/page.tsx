@@ -47,11 +47,11 @@ export default async function AdminContactPage() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <h2 className="text-lg font-semibold">{message.name}</h2>
-                    <p className="mt-1 text-sm text-gray-500">{message.email}</p>
+                    <p className="mt-1 text-sm text-gray-600">{message.email}</p>
                     {message.phone && (
-                      <p className="mt-1 text-sm text-gray-500">{message.phone}</p>
+                      <p className="mt-1 text-sm text-gray-600">{message.phone}</p>
                     )}
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-600">
                       {new Date(message.createdAt).toLocaleString("es-CO")}
                     </p>
                   </div>

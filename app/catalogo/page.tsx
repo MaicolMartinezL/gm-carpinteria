@@ -156,12 +156,12 @@ export default async function CatalogoPage({ searchParams }: CatalogoPageProps) 
                   <div className="p-5">
                     <h2 className="text-xl font-semibold">{product.name}</h2>
 
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-600">
                       Categoría: {product.category.name}
                     </p>
 
                     {(product.material || product.color) && (
-                      <p className="mt-2 text-sm text-gray-500">
+                      <p className="mt-2 text-sm text-gray-600">
                         {product.material ? `Material: ${product.material}` : ""}
                         {product.material && product.color ? " · " : ""}
                         {product.color ? `Color: ${product.color}` : ""}

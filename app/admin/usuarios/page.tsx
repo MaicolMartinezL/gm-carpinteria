@@ -47,11 +47,11 @@ export default async function AdminUsersPage() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-semibold">{user.name}</h2>
-                    <p className="mt-1 text-sm text-gray-500">{user.email}</p>
+                    <p className="mt-1 text-sm text-gray-600">{user.email}</p>
                     {user.phone && (
-                      <p className="mt-1 text-sm text-gray-500">{user.phone}</p>
+                      <p className="mt-1 text-sm text-gray-600">{user.phone}</p>
                     )}
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-600">
                       Creado: {new Date(user.createdAt).toLocaleDateString("es-CO")}
                     </p>
                   </div>

@@ -59,7 +59,7 @@ export default async function MyAppointmentsPage() {
                     <h2 className="text-lg font-semibold">
                       Cita #{appointment.id}
                     </h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-600">
                       {new Date(appointment.scheduledAt).toLocaleString("es-CO")}
                     </p>
                   </div>

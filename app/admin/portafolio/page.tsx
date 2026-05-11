@@ -69,7 +69,7 @@ export default async function AdminPortfolioPage() {
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">{project.category}</p>
+                    <p className="text-sm text-gray-600">{project.category}</p>
                     <h2 className="mt-1 text-xl font-semibold">{project.title}</h2>
                     <p className="mt-2 text-sm text-gray-600">
                       Estado: {project.active ? "Activo" : "Inactivo"}

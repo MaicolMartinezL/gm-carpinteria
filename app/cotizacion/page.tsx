@@ -222,7 +222,7 @@ export default function CotizacionPage() {
           </div>
 
           <div className="mt-6 rounded-xl border p-5">
-            <p className="text-sm text-gray-500">Total estimado base</p>
+            <p className="text-sm text-gray-600">Total estimado base</p>
             <p className="mt-2 text-2xl font-bold">
               ${total.toLocaleString("es-CO")}
             </p>

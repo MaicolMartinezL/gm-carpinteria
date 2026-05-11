@@ -15,7 +15,7 @@ export default function ClientLoginPage() {
         <p className="mt-6 text-sm text-gray-600">
           ¿Aún no tienes cuenta?{" "}
           <Link href="/registro" className="font-medium underline">
-            Regístrate aquí
+            Regístrate aquí   
           </Link>
         </p>
       </div>

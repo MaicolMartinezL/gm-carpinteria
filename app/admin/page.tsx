@@ -66,32 +66,32 @@ export default async function AdminDashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-xl border p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Total productos</p>
+          <p className="text-sm text-gray-600">Total productos</p>
           <h2 className="mt-2 text-3xl font-bold">{totalProducts}</h2>
         </div>
 
         <div className="rounded-xl border p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Productos activos</p>
+          <p className="text-sm text-gray-600">Productos activos</p>
           <h2 className="mt-2 text-3xl font-bold">{activeProducts}</h2>
         </div>
 
         <div className="rounded-xl border p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Total cotizaciones</p>
+          <p className="text-sm text-gray-600">Total cotizaciones</p>
           <h2 className="mt-2 text-3xl font-bold">{totalQuotes}</h2>
         </div>
 
         <div className="rounded-xl border p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Nuevas</p>
+          <p className="text-sm text-gray-600">Nuevas</p>
           <h2 className="mt-2 text-3xl font-bold">{pendingQuotes}</h2>
         </div>
 
         <div className="rounded-xl border p-5 shadow-sm">
-          <p className="text-sm text-gray-500">En proceso</p>
+          <p className="text-sm text-gray-600">En proceso</p>
           <h2 className="mt-2 text-3xl font-bold">{inProgressQuotes}</h2>
         </div>
 
         <div className="rounded-xl border p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Respondidas</p>
+          <p className="text-sm text-gray-600">Respondidas</p>
           <h2 className="mt-2 text-3xl font-bold">{answeredQuotes}</h2>
         </div>
       </div>
@@ -165,7 +165,7 @@ export default async function AdminDashboardPage() {
                 <div key={quote.id} className="rounded-lg border p-4">
                   <p className="font-semibold">{quote.customerName}</p>
 
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-600">
                     {quote.items.length > 0
                       ? quote.items.map((item) => item.product.name).join(", ")
                       : "Sin productos asociados"}

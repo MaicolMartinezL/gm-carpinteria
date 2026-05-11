@@ -32,7 +32,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <main className="min-h-screen p-8">
       <div className="mx-auto max-w-5xl">
-        <p className="text-sm text-gray-500">Categoría: {product.category.name}</p>
+        <p className="text-sm text-gray-600">Categoría: {product.category.name}</p>
 
         <h1 className="mt-2 text-4xl font-bold">{product.name}</h1>
 

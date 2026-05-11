@@ -59,7 +59,7 @@ export default function UserUpdateForm({
       </div>
 
       {isCurrentAdmin ? (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-600">
           No puedes bloquear tu propia cuenta desde este panel.
         </p>
       ) : null}

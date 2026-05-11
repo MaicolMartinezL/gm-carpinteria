@@ -37,7 +37,7 @@ export default async function PortfolioProjectPage({
           Volver al portafolio
         </Link>
 
-        <p className="mt-6 text-sm text-gray-500">{project.category}</p>
+        <p className="mt-6 text-sm text-gray-600">{project.category}</p>
         <h1 className="mt-2 text-4xl font-bold">{project.title}</h1>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-2">

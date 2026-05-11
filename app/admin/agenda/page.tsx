@@ -51,7 +51,7 @@ export default async function AdminAgendaPage() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-semibold">Cita #{appointment.id}</h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-600">
                       {new Date(appointment.scheduledAt).toLocaleString("es-CO")}
                     </p>
                   </div>
@@ -63,7 +63,7 @@ export default async function AdminAgendaPage() {
 
                 <div className="mt-5 grid gap-6 lg:grid-cols-2">
                   <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
                       Cliente
                     </h3>
                     <div className="mt-3 space-y-1 text-sm text-gray-700">
@@ -86,7 +86,7 @@ export default async function AdminAgendaPage() {
 
                     {appointment.notes && (
                       <>
-                        <h3 className="mt-6 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                        <h3 className="mt-6 text-sm font-semibold uppercase tracking-wide text-gray-600">
                           Detalles
                         </h3>
                         <p className="mt-3 text-sm text-gray-700">{appointment.notes}</p>

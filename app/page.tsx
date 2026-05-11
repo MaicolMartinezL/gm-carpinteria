@@ -96,7 +96,7 @@ export default async function HomePage() {
                   <div className="p-5">
                     <h3 className="text-lg font-semibold">{product.name}</h3>
 
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-600">
                       {product.category.name}
                     </p>
 

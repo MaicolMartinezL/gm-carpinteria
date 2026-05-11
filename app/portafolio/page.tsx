@@ -113,12 +113,12 @@ export default async function PortfolioPage({
                   </div>
 
                   <div className="p-5">
-                    <p className="text-sm text-gray-500">{project.category}</p>
+                    <p className="text-sm text-gray-600">{project.category}</p>
 
                     <h2 className="mt-2 text-xl font-semibold">{project.title}</h2>
 
                     {project.location && (
-                      <p className="mt-2 text-sm text-gray-500">
+                      <p className="mt-2 text-sm text-gray-600">
                         Ubicación: {project.location}
                       </p>
                     )}

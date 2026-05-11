@@ -121,7 +121,7 @@ export default function PortfolioForm({
       /portfolio/cocina-familiar-2.jpg
       /portfolio/cocina-familiar-3.jpg`}
         />
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-600">
           Escribe una imagen por línea. La primera será la imagen principal.
         </p>
       </div>

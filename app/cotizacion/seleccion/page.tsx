@@ -140,7 +140,7 @@ export default function QuoteSelectionPage() {
             <div className="mt-8 rounded-xl border p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Total estimado base</p>
+                  <p className="text-sm text-gray-600">Total estimado base</p>
                   <p className="text-2xl font-bold">
                     ${total.toLocaleString("es-CO")}
                   </p>

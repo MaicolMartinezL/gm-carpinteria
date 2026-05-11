@@ -62,7 +62,7 @@ export default async function MyQuotesPage() {
                     <h2 className="text-lg font-semibold">
                       Cotización #{quote.id}
                     </h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-600">
                       Fecha: {new Date(quote.createdAt).toLocaleDateString("es-CO")}
                     </p>
                   </div>

@@ -64,7 +64,7 @@ export default async function AdminProductsPage() {
               <article key={product.id} className="rounded-xl border p-5 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">{product.category.name}</p>
+                    <p className="text-sm text-gray-600">{product.category.name}</p>
                     <h2 className="mt-1 text-xl font-semibold">{product.name}</h2>
                     <p className="mt-2 text-sm text-gray-600">
                       Estado: {product.active ? "Activo" : "Inactivo"}
