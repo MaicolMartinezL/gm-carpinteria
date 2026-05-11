@@ -4,23 +4,22 @@ import "./globals.css";
 import { verifySession } from "@/lib/auth";
 import LogoutButton from "@/components/logout-button";
 import WhatsAppFloatingButton from "@/components/whatsapp-floating-button";
+import MobileMenu from "@/app/mobile-menu";
 import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "GM Carpintería | Muebles a medida en Colombia",
   description:
-  "Fabricación de muebles a medida: cocinas, closets, oficinas y más. Solicita tu cotización en GM Carpintería.",
+    "Fabricación de muebles a medida: cocinas, closets, oficinas y más. Solicita tu cotización en GM Carpintería.",
   icons: {
     icon: "/icon.jpg",
   },
-
   openGraph: {
     title: "GM Carpintería",
     description: "Muebles a medida para tu hogar y oficina.",
     images: ["/og-image.jpg"],
   },
 };
-
 
 export default async function RootLayout({
   children,
@@ -30,8 +29,10 @@ export default async function RootLayout({
   return (
     <html lang="es">
       <body className="min-h-screen bg-white text-black">
-        <header className="border-b bg-white">
+        <header className="border-b bg-white relative">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+
+            {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/logo.jpg"
@@ -40,70 +41,39 @@ export default async function RootLayout({
                 height={40}
                 className="object-contain"
               />
-              <span className="text-xl font-bold text-black">
-                GM Carpintería
-              </span>
+              <span className="text-xl font-bold text-black">GM Carpintería</span>
             </Link>
 
-            <nav className="flex flex-wrap items-center gap-6 text-sm font-medium text-black">
-              <Link href="/" className="transition hover:text-gray-700">
-                Inicio
-              </Link>
-
-              <Link href="/catalogo" className="transition hover:text-gray-700">
-                Catálogo
-              </Link>
-
-              <Link href="/portafolio" className="transition hover:text-gray-700">
-                Portafolio
-              </Link>
-
-              <Link href="/contacto" className="transition hover:text-gray-700">
-                Contacto
-              </Link>
-
-              <Link href="/agenda" className="transition hover:text-gray-700">
-                Agenda
-              </Link>
+            {/* Nav desktop (oculto en mobile) */}
+            <nav className="hidden md:flex flex-wrap items-center gap-6 text-sm font-medium text-black">
+              <Link href="/" className="transition hover:text-gray-700">Inicio</Link>
+              <Link href="/catalogo" className="transition hover:text-gray-700">Catálogo</Link>
+              <Link href="/portafolio" className="transition hover:text-gray-700">Portafolio</Link>
+              <Link href="/contacto" className="transition hover:text-gray-700">Contacto</Link>
+              <Link href="/agenda" className="transition hover:text-gray-700">Agenda</Link>
 
               {!session ? (
                 <>
-                  <Link href="/login" className="transition hover:text-gray-700">
-                    Login
-                  </Link>
-
-                  <Link href="/registro" className="transition hover:text-gray-700">
-                    Registro
-                  </Link>
+                  <Link href="/login" className="transition hover:text-gray-700">Login</Link>
+                  <Link href="/registro" className="transition hover:text-gray-700">Registro</Link>
                 </>
               ) : session.role === "CLIENT" ? (
                 <>
-                  <Link
-                    href="/mis-cotizaciones"
-                    className="transition hover:text-gray-700"
-                  >
-                    Mis cotizaciones
-                  </Link>
-
-                  <Link
-                    href="/mis-citas"
-                    className="transition hover:text-gray-700"
-                  >
-                    Mis citas
-                  </Link>
-
+                  <Link href="/mis-cotizaciones" className="transition hover:text-gray-700">Mis cotizaciones</Link>
+                  <Link href="/mis-citas" className="transition hover:text-gray-700">Mis citas</Link>
                   <LogoutButton />
                 </>
               ) : (
                 <>
-                  <Link href="/admin" className="transition hover:text-gray-700">
-                    Admin
-                  </Link>
-
+                  <Link href="/admin" className="transition hover:text-gray-700">Admin</Link>
                   <LogoutButton />
                 </>
               )}
             </nav>
+
+            {/* Botón hamburguesa + menú mobile */}
+            <MobileMenu session={session} />
+
           </div>
         </header>
 
