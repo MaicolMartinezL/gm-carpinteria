@@ -15,6 +15,15 @@ type StoredQuoteProduct = {
 
 const STORAGE_KEY = "gm_quote_products";
 
+async function ensureCsrfCookie(): Promise<string> {
+  const match = document.cookie.match(/csrf_token=([^;]+)/);
+  if (match) return match[1];
+
+  const res = await fetch("/api/csrf");
+  const data = await res.json();
+  return data.token as string;
+}
+
 export default function CotizacionPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -30,6 +39,11 @@ export default function CotizacionPage() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [needsDescription, setNeedsDescription] = useState("");
 
+  // Inicializa la cookie CSRF al montar la página
+  useEffect(() => {
+    ensureCsrfCookie();
+  }, []);
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -37,7 +51,6 @@ export default function CotizacionPage() {
 
       if (productSlug) {
         const existing = storedProducts.find((item) => item.slug === productSlug);
-
         if (existing) {
           setProducts([existing]);
         } else {
@@ -76,6 +89,13 @@ export default function CotizacionPage() {
       return;
     }
 
+    // ── Validación CSRF ──
+    const rawToken = await ensureCsrfCookie();
+    if (!rawToken) {
+      setErrorMessage("Error de seguridad: recarga la página e intenta de nuevo.");
+      return;
+    }
+
     try {
       setSubmitting(true);
 
@@ -83,6 +103,7 @@ export default function CotizacionPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-csrf-token": rawToken,
         },
         body: JSON.stringify({
           customerName,
@@ -130,7 +151,6 @@ export default function CotizacionPage() {
           <p className="mt-4 text-gray-600">
             Debes agregar al menos un producto antes de solicitar una cotización.
           </p>
-
           <Link
             href="/catalogo"
             className="mt-6 inline-block rounded-lg bg-black px-5 py-3 text-white"

@@ -1,12 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
+import { validateCsrfToken } from "@/lib/csrf";
 
 type QuoteProductInput = {
   id: number;
 };
 
 export async function POST(request: Request) {
+  // ── Validación CSRF ──
+  const csrfHeader = request.headers.get("x-csrf-token");
+  const isValid = csrfHeader ? await validateCsrfToken(csrfHeader) : false;
+  if (!isValid) {
+    return NextResponse.json({ error: "Token CSRF inválido." }, { status: 403 });
+  }
+
   try {
     const session = await verifySession();
     const body = await request.json();
@@ -75,7 +83,6 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Error creando cotización:", error);
-
     return NextResponse.json(
       { error: "Ocurrió un error al crear la cotización." },
       { status: 500 }
